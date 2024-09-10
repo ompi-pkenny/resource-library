@@ -13,9 +13,13 @@
     "core-js": "^3.8.3",
     "debounce": "^2.0.0",
     "html2canvas": "^1.4.1",
+    "images-loaded": "^1.0.0",
+    "masonry-layout": "^4.2.2",
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^4.5.136",
-    "vue": "^3.2.13"
+    "vue": "^3.2.13",
+    "vue-masonry": "^0.16.0",
+    "vue-masonry-css": "^1.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
@@ -24,9 +28,16 @@
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-eslint": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
+    "@vue/compiler-sfc": "^3.5.3",
+    "babel-plugin-lodash": "^3.3.4",
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
-    "webpack": "^5.92.1"
+    "lodash-webpack-plugin": "^0.11.6",
+    "vue-loader": "^17.3.1",
+    "webpack": "^5.92.1",
+    "webpack-bundle-analyzer": "^4.10.2",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.1.0"
   },
   "eslintConfig": {
     "root": true,

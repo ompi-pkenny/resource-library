@@ -1,4 +1,10 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 
-createApp(App).mount('#app')
+const pdfjsLib = window.pdfjsLib
+
+
+const app = createApp(App)
+app.config.globalProperties.$pdfjsLib = pdfjsLib
+
+app.mount('#app')

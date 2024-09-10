@@ -48,7 +48,7 @@
             <span>Page {{ currentPage }} of {{ totalPages }}</span>
             <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">Next</button>
           </div>
-          <div v-if="loading" class="lds-loader">
+          <!-- <div v-if="loading" class="lds-loader">
             <div class="lds-roller">
               <div></div>
               <div></div>
@@ -59,18 +59,13 @@
               <div></div>
               <div></div>
             </div>
-          </div>
-          <div v-else class="resources">
-            <div :class="generateClassNames(resource.resource_types[0], resource.clinical_programs[0])" class="resource"
-              v-for="resource in resources" :key="resource.id">
-              <!-- <img width="100%"
-                :src="resource.featured_image_url ? resource.featured_image_url : '/wp-content/themes/Divi/vue-app/images/default-resource-thumbnail.png'"
-                alt="Resource Image"> -->
-              <!-- <PdfToImage v-if="resource.acf.download_url.includes('.pdf')" :pdfUrl="resource.download_url" /> -->
-              <PdfToImage v-if="resource.acf.download_url.includes('.pdf')"
-                pdfUrl="4-Key-Stressors-Questionnaire.pdf" />
-              <img class="resource-img" v-else-if="resource.featured_image_url" :src="resource.featured_image_url" />
-              <img class="resource-img" v-else src='https://picsum.photos/200/300' />
+          </div> -->
+          <div ref="masonryContainer" class="resources masonry-grid">
+            <div :class="generateClassNames(resource.resource_types[0], resource.clinical_programs[0])"
+              class="resource masonry-item" v-for="resource in resources" :key="resource.id">
+              <img @load="onImageOrPdfRendered" class="resource-img" v-if="resource.featured_image_url"
+                :src="resource.featured_image_url" />
+              <img @load="onImageOrPdfRendered" class="resource-img" v-else src='Frame 2.jpg' />
 
               <div class="overlay">
                 <div v-if="!resource.isLocked">
@@ -111,14 +106,20 @@
 <script>
 import axios from 'axios';
 import { debounce } from 'lodash';
-import PdfToImage from './components/PdfToImage.vue';
+import Masonry from 'masonry-layout';
+import imagesLoaded from 'imagesloaded';
+
+
+
 
 
 
 export default {
   name: 'ResourceLibrary',
   components: {
-    PdfToImage,
+
+
+
   },
 
   data() {
@@ -137,9 +138,20 @@ export default {
       totalPages: 1,
       itemsPerPage: 12,
       loading: false,
+      masonryInstance: null,
+      loadedResources: 0,
     };
   },
   watch: {
+    resources() {
+      console.log("research watch")
+      this.loadedResources = 0;
+      imagesLoaded('.resource-img', { background: true }, () => {
+        
+        this.masonryInstance.layout();
+        console.log("images loaded")
+      });
+    },
     searchQuery: debounce(function (newQuery) {
       this.debouncedSearchQuery = newQuery;
     }, 300),
@@ -157,6 +169,36 @@ export default {
     }
   },
   methods: {
+    onImageOrPdfRendered() {
+      console.log("image or pdf rendered")
+      this.loadedResources += 1;
+
+
+      // Once all images/PDFs have rendered, initialize the Masonry layout
+
+
+        this.masonryInstance.reloadItems();
+        this.masonryInstance.layout();
+
+
+    },
+    initializeMasonry() {
+      this.masonryInstance = new Masonry(this.$refs.masonryContainer, {
+        itemSelector: '.masonry-item',
+        columnWidth: '.masonry-item', // Adjust according to your column width
+        percentPosition: true,
+
+      });
+      // Wait for images to load before laying out the masonry grid
+      imagesLoaded('.resource-img', { background: true }, () => {
+        console.log("images loaded")
+        this.masonryInstance.layout();
+      });
+      window.addEventListener('resize', () => {
+        console.log("resize")
+        this.masonryInstance.layout();
+      });
+    },
     getResourceTypeName(typeId) {
       const type = this.menus[0].options.find(option => option[1] === typeId);
       return type ? type[0] : 'Unknown Type';
@@ -307,7 +349,7 @@ export default {
     },
     async fetchInitialData() {
       try {
-        await Promise.all([this.fetchMembershipLevel(), this.fetchResources(), this.fetchResourceTypes(), this.fetchClinicalPrograms()]);
+        await Promise.all([this.fetchMembershipLevel(), this.fetchResources(), this.fetchResourceTypes(), this.fetchClinicalPrograms(),]);
       } catch (error) {
         console.error('Error fetching initial data:', error);
       }
@@ -315,14 +357,55 @@ export default {
   },
   mounted() {
     this.fetchInitialData();
-  }
+    this.initializeMasonry();
+
+  },
+  beforeUnmount() {
+    if (this.masonry) {
+      this.masonry.destroy();
+    }
+  },
 };
 </script>
 
 <style scoped>
+
+input {
+  padding: .5rem;
+  border-radius: 25px;
+  font-size: 1rem;
+}
+.masonry-item {
+  width: 25%;
+  /* Adjust based on your preference */
+  margin: 10px;
+}
+
+
+
+@media (max-width: 1199px) {
+  .masonry-item {
+    width: 33.33%;
+    /* 3 columns */
+  }
+}
+
+@media (max-width: 991px) {
+  .masonry-item {
+    width: 50%;
+    /* 2 columns */
+  }
+}
+
+@media (max-width: 767px) {
+  .masonry-item {
+    width: 80%;
+    /* 1 column */
+  }
+}
+
 .resource {
   position: relative;
-  overflow: hidden;
 }
 
 .resource-img {
@@ -344,6 +427,7 @@ export default {
   flex-direction: column;
   gap: 10px;
   transition: opacity 0.3s ease;
+  border-radius: 25px;
 }
 
 .resource:hover .overlay {
@@ -358,7 +442,11 @@ export default {
   font-size: 14px;
   border-radius: 5px;
   transition: background-color 0.3s ease;
-  text-decoration: none
+  text-decoration: none;
+  color: black;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin: 5px;
 }
 
 .resource-btn:hover {
@@ -372,12 +460,7 @@ export default {
   margin: 2rem 0;
 }
 
-.resources {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  grid-auto-rows: auto;
 
-}
 
 .resources-container {
   width: 100%;
@@ -397,7 +480,6 @@ export default {
   justify-content: start;
   margin: 1rem;
   padding: 1rem;
-  overflow: hidden;
 }
 
 .catalog {
@@ -770,13 +852,6 @@ button {
     display: block;
   }
 
-  .resource {
-    margin: 1rem .5rem;
-  }
-
-  .resources {
-    justify-content: center;
-  }
 
   .side-filters {
     display: none;

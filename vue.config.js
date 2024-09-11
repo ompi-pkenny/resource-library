@@ -3,6 +3,9 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 
 module.exports = defineConfig({
+  publicPath: process.env.NODE_ENV === 'production'
+    ? '/resource-library/'
+    : '/',
   transpileDependencies: true,
   configureWebpack: {
     plugins: [

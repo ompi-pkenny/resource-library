@@ -9,7 +9,6 @@ module.exports = defineConfig({
   transpileDependencies: true,
   configureWebpack: {
     plugins: [
-      new BundleAnalyzerPlugin(),
       new LodashModuleReplacementPlugin(),
     ],
   },

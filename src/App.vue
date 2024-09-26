@@ -68,22 +68,88 @@
               <img @load="onImageOrPdfRendered" class="resource-img" v-else src='Frame 2.jpg' />
 
               <div class="overlay">
-                <div v-if="!resource.isLocked">
+
+                <div style="color: white;" v-if="resource.isLocked">
+                  <img src="images/locked.svg" height="75px" />
+                  <p>Members Only</p>
+                </div>
+                <div v-else-if="resource.resource_types.includes(22)">
+                  <div style="display: flex; flex-direction: column; height: 100%;" id="myDropdown"
+                    class="dropdown-content">
+                    <div v-if="resource.acf.blog_post" class="presentation-toolkit-resource">
+                      <div>Blog Post</div>
+                      <div class="presentation-toolkit-links">
+                        <a  :href="resource.acf.blog_post"><img src="images/view.svg" alt=""></a>
+                        <a  download="" :href="resource.acf.blog_post"><img src="images/download.svg" alt=""></a>
+                      </div>
+                    </div>
+                    <div v-if="resource.acf.email_content" class="presentation-toolkit-resource">
+                      <div>Email Content</div>
+                      <div class="presentation-toolkit-links">
+                        <a  :href="resource.acf.email_content"><img src="images/view.svg" alt=""></a>
+                        <a  download="" :href="resource.acf.email_content"><img src="images/download.svg" alt=""></a>
+                      </div>
+                    </div>
+                    <div v-if="resource.acf.social_media_content" class="presentation-toolkit-resource">
+                      <div>Social Media Content</div>
+                      <div class="presentation-toolkit-links">
+                        <a  :href="resource.acf.social_media_content"><img src="images/view.svg" alt=""></a>
+                        <a  download="" :href="resource.acf.social_media_content"><img src="images/download.svg" alt=""></a>
+                      </div>
+                    </div>
+                    <div v-if="resource.acf.social_media_images" class="presentation-toolkit-resource">
+                      <div>Social Media Images</div>
+                      <div class="presentation-toolkit-links">
+                        <a  download="" :href="resource.acf.social_media_images"><img src="images/download.svg" alt=""></a>
+                      </div>
+                    </div>
+                    <div v-if="resource.acf.webinar_slide_deck" class="presentation-toolkit-resource">
+                      <div>Webinar Slide Deck</div>
+                      <div class="presentation-toolkit-links">
+                        <a  download="" :href="resource.acf.webinar_slide_deck"><img src="images/download.svg" alt=""></a>
+                      </div>
+                    </div>
+                    <div  v-if="resource.acf.email_sequence" class="presentation-toolkit-resource">
+                      <div>Email Sequence</div>
+                      <div class="presentation-toolkit-links">
+                        <a :href="resource.acf.email_sequence"><img src="images/view.svg" alt=""></a>
+                        <a download="" :href="resource.acf.email_sequence"><img src="images/download.svg" alt=""></a>
+                      </div>
+                    </div>
+                    <div v-if="resource.acf.powerpoint_narration_" class="presentation-toolkit-resource">
+                      <div>Power Point Narration</div>
+                      <div class="presentation-toolkit-links">
+                        <span :class="`wistia_embed wistia_async_${resource.acf.powerpoint_narration_wistia_id} popover=true popoverContent=link videoFoam=false`" style="display:inline;position:relative"><img style="cursor: pointer;" src="images/view.svg" alt=""></span>
+                        <a download="" :href="resource.acf.powerpoint_narration_"><img src="images/download.svg" alt=""></a>
+                      </div>
+                    </div>
+                    <div v-if="resource.acf.post_webinar_scripts" class="presentation-toolkit-resource">
+                      <div>Post Webinar Scripts</div>
+                      <div class="presentation-toolkit-links">
+                        <a  :href="resource.acf.post_webinar_scripts"><img src="images/view.svg" alt=""></a>
+                        <a  download="" :href="resource.acf.post_webinar_scripts"><img src="images/download.svg" alt=""></a>
+                      </div>
+                    </div>
+                    <div v-if="resource.acf.all_resources" class="presentation-toolkit-resource">
+                      <div>All Resources</div>
+                      <div class="presentation-toolkit-links">
+                        <a  download="" :href="resource.acf.all_resources"><img src="images/download.svg" alt=""></a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div v-else>
                   <a class="resource-btn view" v-if="resource.acf.content_link"
                     :href="resource.acf.content_link">View</a>
                   <a class="resource-btn view" :download="resource.title.rendered" v-if="resource.acf.download_url"
                     :href="resource.acf.download_url">Download</a>
-                </div>
-                <div style="color: white;" v-else>
-                  <img src="images/locked.svg" height="75px" />
-                  <p>Members Only</p>
                 </div>
               </div>
               <div class="resource-title">{{ resource.title.rendered }}</div>
               <div class="resource-taxonomies">
                 <div class="resource-clinical-program" v-for="program in resource.clinical_programs" :key="program">{{
                   getClinicalProgramName(program)
-                  }}</div>
+                }}</div>
                 <div class="resource-resource-type" v-for="type in resource.resource_types" :key="type">{{
                   getResourceTypeName(type) }}</div>
               </div>
@@ -147,7 +213,7 @@ export default {
       console.log("research watch")
       this.loadedResources = 0;
       imagesLoaded('.resource-img', { background: true }, () => {
-        
+
         this.masonryInstance.layout();
         console.log("images loaded")
       });
@@ -169,6 +235,13 @@ export default {
     }
   },
   methods: {
+
+    appendWistiaScript (wistiaId) {
+      const script = document.createElement('script');
+      script.src = `https://fast.wistia.com/embed/medias/${wistiaId}.jsonp`;
+      script.async = true;
+      document.body.appendChild(script);
+    },
     onImageOrPdfRendered() {
       console.log("image or pdf rendered")
       this.loadedResources += 1;
@@ -177,8 +250,8 @@ export default {
       // Once all images/PDFs have rendered, initialize the Masonry layout
 
 
-        this.masonryInstance.reloadItems();
-        this.masonryInstance.layout();
+      this.masonryInstance.reloadItems();
+      this.masonryInstance.layout();
 
 
     },
@@ -358,6 +431,11 @@ export default {
   mounted() {
     this.fetchInitialData();
     this.initializeMasonry();
+    const wistiaScript = document.createElement('script');
+    wistiaScript.src = 'https://fast.wistia.com/assets/external/E-v1.js';
+    wistiaScript.async = true;
+    document.body.appendChild(wistiaScript);
+    
 
   },
   beforeUnmount() {
@@ -369,12 +447,22 @@ export default {
 </script>
 
 <style scoped>
+.presentation-toolkit-resource {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  height: 100%;
+  color: white;
+  align-items: center;
+  font-weight: bold
+}
 
 input {
   padding: .5rem;
   border-radius: 25px;
   font-size: 1rem;
 }
+
 .masonry-item {
   width: 25%;
   /* Adjust based on your preference */
@@ -419,7 +507,7 @@ input {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.8));
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.9));
   opacity: 0;
   display: flex;
   justify-content: center;

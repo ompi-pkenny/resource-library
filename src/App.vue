@@ -48,7 +48,7 @@
             <span>Page {{ currentPage }} of {{ totalPages }}</span>
             <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">Next</button>
           </div>
-          <!-- <div v-if="loading" class="lds-loader">
+          <div v-if="loading" class="lds-loader">
             <div class="lds-roller">
               <div></div>
               <div></div>
@@ -59,8 +59,8 @@
               <div></div>
               <div></div>
             </div>
-          </div> -->
-          <div ref="masonryContainer" class="resources masonry-grid">
+          </div>
+          <div @click="loading()" v-else ref="masonryContainer" class="masonry-grid">
             <div :class="generateClassNames(resource.resource_types[0], resource.clinical_programs[0])"
               class="resource masonry-item" v-for="resource in resources" :key="resource.id">
               <img @load="onImageOrPdfRendered" class="resource-img" v-if="resource.featured_image_url"
@@ -79,37 +79,40 @@
                     <div v-if="resource.acf.blog_post" class="presentation-toolkit-resource">
                       <div>Blog Post</div>
                       <div class="presentation-toolkit-links">
-                        <a  :href="resource.acf.blog_post"><img src="images/view.svg" alt=""></a>
-                        <a  download="" :href="resource.acf.blog_post"><img src="images/download.svg" alt=""></a>
+                        <a :href="resource.acf.blog_post"><img src="images/view.svg" alt=""></a>
+                        <a download="" :href="resource.acf.blog_post"><img src="images/download.svg" alt=""></a>
                       </div>
                     </div>
                     <div v-if="resource.acf.email_content" class="presentation-toolkit-resource">
                       <div>Email Content</div>
                       <div class="presentation-toolkit-links">
-                        <a  :href="resource.acf.email_content"><img src="images/view.svg" alt=""></a>
-                        <a  download="" :href="resource.acf.email_content"><img src="images/download.svg" alt=""></a>
+                        <a :href="resource.acf.email_content"><img src="images/view.svg" alt=""></a>
+                        <a download="" :href="resource.acf.email_content"><img src="images/download.svg" alt=""></a>
                       </div>
                     </div>
                     <div v-if="resource.acf.social_media_content" class="presentation-toolkit-resource">
                       <div>Social Media Content</div>
                       <div class="presentation-toolkit-links">
-                        <a  :href="resource.acf.social_media_content"><img src="images/view.svg" alt=""></a>
-                        <a  download="" :href="resource.acf.social_media_content"><img src="images/download.svg" alt=""></a>
+                        <a :href="resource.acf.social_media_content"><img src="images/view.svg" alt=""></a>
+                        <a download="" :href="resource.acf.social_media_content"><img src="images/download.svg"
+                            alt=""></a>
                       </div>
                     </div>
                     <div v-if="resource.acf.social_media_images" class="presentation-toolkit-resource">
                       <div>Social Media Images</div>
                       <div class="presentation-toolkit-links">
-                        <a  download="" :href="resource.acf.social_media_images"><img src="images/download.svg" alt=""></a>
+                        <a download="" :href="resource.acf.social_media_images"><img src="images/download.svg"
+                            alt=""></a>
                       </div>
                     </div>
                     <div v-if="resource.acf.webinar_slide_deck" class="presentation-toolkit-resource">
                       <div>Webinar Slide Deck</div>
                       <div class="presentation-toolkit-links">
-                        <a  download="" :href="resource.acf.webinar_slide_deck"><img src="images/download.svg" alt=""></a>
+                        <a download="" :href="resource.acf.webinar_slide_deck"><img src="images/download.svg"
+                            alt=""></a>
                       </div>
                     </div>
-                    <div  v-if="resource.acf.email_sequence" class="presentation-toolkit-resource">
+                    <div v-if="resource.acf.email_sequence" class="presentation-toolkit-resource">
                       <div>Email Sequence</div>
                       <div class="presentation-toolkit-links">
                         <a :href="resource.acf.email_sequence"><img src="images/view.svg" alt=""></a>
@@ -119,27 +122,32 @@
                     <div v-if="resource.acf.powerpoint_narration_" class="presentation-toolkit-resource">
                       <div>Power Point Narration</div>
                       <div class="presentation-toolkit-links">
-                        <span :class="`wistia_embed wistia_async_${resource.acf.powerpoint_narration_wistia_id} popover=true popoverContent=link videoFoam=false`" style="display:inline;position:relative"><img style="cursor: pointer;" src="images/view.svg" alt=""></span>
-                        <a download="" :href="resource.acf.powerpoint_narration_"><img src="images/download.svg" alt=""></a>
+                        <span
+                          :class="`wistia_embed wistia_async_${resource.acf.powerpoint_narration_wistia_id} popover=true popoverContent=link videoFoam=false`"
+                          style="display:inline;position:relative"><img style="cursor: pointer;" src="images/view.svg"
+                            alt=""></span>
+                        <a download="" :href="resource.acf.powerpoint_narration_"><img src="images/download.svg"
+                            alt=""></a>
                       </div>
                     </div>
                     <div v-if="resource.acf.post_webinar_scripts" class="presentation-toolkit-resource">
                       <div>Post Webinar Scripts</div>
                       <div class="presentation-toolkit-links">
-                        <a  :href="resource.acf.post_webinar_scripts"><img src="images/view.svg" alt=""></a>
-                        <a  download="" :href="resource.acf.post_webinar_scripts"><img src="images/download.svg" alt=""></a>
+                        <a :href="resource.acf.post_webinar_scripts"><img src="images/view.svg" alt=""></a>
+                        <a download="" :href="resource.acf.post_webinar_scripts"><img src="images/download.svg"
+                            alt=""></a>
                       </div>
                     </div>
                     <div v-if="resource.acf.all_resources" class="presentation-toolkit-resource">
                       <div>All Resources</div>
                       <div class="presentation-toolkit-links">
-                        <a  download="" :href="resource.acf.all_resources"><img src="images/download.svg" alt=""></a>
+                        <a download="" :href="resource.acf.all_resources"><img src="images/download.svg" alt=""></a>
                       </div>
                     </div>
                   </div>
                 </div>
                 <div v-else>
-                  <a class="resource-btn view" v-if="resource.acf.content_link"
+                  <a target="_blank" class="resource-btn view" v-if="resource.acf.content_link"
                     :href="resource.acf.content_link">View</a>
                   <a class="resource-btn view" :download="resource.title.rendered" v-if="resource.acf.download_url"
                     :href="resource.acf.download_url">Download</a>
@@ -149,7 +157,7 @@
               <div class="resource-taxonomies">
                 <div class="resource-clinical-program" v-for="program in resource.clinical_programs" :key="program">{{
                   getClinicalProgramName(program)
-                }}</div>
+                  }}</div>
                 <div class="resource-resource-type" v-for="type in resource.resource_types" :key="type">{{
                   getResourceTypeName(type) }}</div>
               </div>
@@ -164,9 +172,6 @@
       </div>
     </div>
   </div>
-
-
-
 </template>
 
 <script>
@@ -174,6 +179,7 @@ import axios from 'axios';
 import { debounce } from 'lodash';
 import Masonry from 'masonry-layout';
 import imagesLoaded from 'imagesloaded';
+
 
 
 
@@ -209,6 +215,15 @@ export default {
     };
   },
   watch: {
+    loading() {
+      this.$nextTick(() => {
+        if (this.loading === false) {
+
+        this.initializeMasonry();
+        }
+      });
+      
+    },
     resources() {
       console.log("research watch")
       this.loadedResources = 0;
@@ -217,6 +232,7 @@ export default {
         this.masonryInstance.layout();
         console.log("images loaded")
       });
+      this.masonryInstance.reloadItems();
     },
     searchQuery: debounce(function (newQuery) {
       this.debouncedSearchQuery = newQuery;
@@ -236,14 +252,14 @@ export default {
   },
   methods: {
 
-    appendWistiaScript (wistiaId) {
+    appendWistiaScript(wistiaId) {
       const script = document.createElement('script');
       script.src = `https://fast.wistia.com/embed/medias/${wistiaId}.jsonp`;
       script.async = true;
       document.body.appendChild(script);
     },
     onImageOrPdfRendered() {
-      console.log("image or pdf rendered")
+      // console.log("image or pdf rendered")
       this.loadedResources += 1;
 
 
@@ -268,7 +284,7 @@ export default {
         this.masonryInstance.layout();
       });
       window.addEventListener('resize', () => {
-        console.log("resize")
+        // console.log("resize")
         this.masonryInstance.layout();
       });
     },
@@ -341,13 +357,13 @@ export default {
 
         const response = await axios.get('https://staging4.lmrcimplementation.com/wp-json/wp/v2/resources/', { params });
         const resources = await Promise.all(response.data.map(async (resource) => {
-          const membershipLevel = this.membershipTest;
-          const resourceMembership = resource.acf.membership_level;
-          if (resourceMembership) {
-            resource.isLocked = !membershipLevel.some(level => resourceMembership.includes(level));
-          } else {
-            resource.isLocked = false;
-          }
+          // const membershipLevel = this.membershipTest;
+          // const resourceMembership = resource.acf.membership_level;
+          // if (resourceMembership) {
+          //   resource.isLocked = !membershipLevel.some(level => resourceMembership.includes(level));
+          // } else {
+          //   resource.isLocked = false;
+          // }
           return resource;
         }));
 
@@ -435,7 +451,7 @@ export default {
     wistiaScript.src = 'https://fast.wistia.com/assets/external/E-v1.js';
     wistiaScript.async = true;
     document.body.appendChild(wistiaScript);
-    
+
 
   },
   beforeUnmount() {
